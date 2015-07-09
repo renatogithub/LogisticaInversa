@@ -1,0 +1,121 @@
+body{
+
+	margin:0,auto;
+	font-family: Verdana, Arial, Helvatica, sans-serif;
+	font-size: 0.8em;
+	font-weight: 500;
+	background: #6E6E6E;
+}
+
+h1{
+	font-family: Verdana, Arial, Helvatica, sans-serif;
+	font-size: 2em;
+	font-weight: 700;
+}
+
+h2{
+	font-family: Verdana, Arial, Helvatica, sans-serif;
+	font-size: 1.75em;
+	font-weight: 700;
+}
+
+h3{
+	font-family: Verdana, Arial, Helvatica, sans-serif;
+	font-size: 1.58em;
+	font-weight: 500;
+}
+
+h4{
+	font-family: Verdana, Arial, Helvatica, sans-serif;
+	font-size: 1.30em;
+	font-weight: 400;
+}
+
+th{
+	font-family: Verdana, Arial, Helvatica, sans-serif;
+	font-size: 0.9em;
+	color:white;
+	font-weight: 500;
+	font:bold;
+	background: #804d19;
+}
+
+td{
+	font-family: Verdana, Arial, Helvatica, sans-serif;
+	font-size: 0.9em;
+	color:navy;
+	font-weight: 500;
+}
+
+a{
+	font-family: Verdana, Arial, Helvatica, sans-serif;
+	font-size: 0.9em;
+	color:#804d19;
+	text-decoration: none;
+}
+
+a:HOVER{
+	font-family: Verdana, Arial, Helvatica, sans-serif;
+	font-size: 0.9em;
+	color:white;
+	text-decoration: none;
+}
+
+.cabecera{
+	width: 100%;
+	margin: 0px;
+	padding: 0px 0px 0px 0px;
+	background: #000000;
+	
+}
+
+#usuario{
+	width: 100%;
+	margin: 0px;
+	padding: 0px 0px 0px 0px;
+	
+	text-align: left;
+	
+}
+
+#cuerpo{
+	width: 80%;
+	background-color:white;
+	margin: auto;
+
+}
+
+#pie{
+	width: 100%;
+	margin: 0px;
+	padding: 0px 0px 0px 0px;
+	background: #000000;
+	text-align: center;
+	color:#ffefd5;
+}
+
+#contenido #izquierda{
+	width: 25%;
+	height: 350px;
+	float: left;
+	background-color:white;
+	/*background-color: blue;*/
+}
+
+#contenido #derecha{
+	width: 75%;
+	height: 350px;
+	float:right;
+	background-color:white;
+	/*background-color: green;*/
+}
+
+ul {
+	margin: 20px;
+	list-style-type: none;
+	list-style-position: inside;
+	padding: 0px;
+	height: 50px;
+}
+
+
