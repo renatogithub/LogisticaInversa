@@ -8,7 +8,6 @@ public class ActaDevolucionBean extends FichaDevolucionBean {
 	private String estadoPedido;
 	private String modoRecojo;
 	
-	//
 	public String getNroActa() {
 		return nroActa;
 	}
