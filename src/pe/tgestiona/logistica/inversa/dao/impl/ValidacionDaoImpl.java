@@ -517,7 +517,7 @@ public class ValidacionDaoImpl implements ValidacionDao{
 					tecnologia=rs.getString(8)==null?"":rs.getString(8);	
 					cantMateriales=rs.getInt(9);
 					pesoRRSS=rs.getString(10)==null?"":rs.getString(10);
-					volumenRRSS=rs.getString(11)==null?"":rs.getString(11);
+					volumenRRSS=rs.getString(11)==null?"":rs.getString(11);					
 					
 					if(estadoValidacion.equals(ConstantesGenerales.EstadoValidacionActa.SINVALIDAR.getTipoValor())){
 						indBod=rs.getString(12)==null?"":rs.getString(12);
@@ -866,7 +866,6 @@ public class ValidacionDaoImpl implements ValidacionDao{
 						detalleFichaDevolucionBean.setMesLiquidacion_Averias(mesDevolucion);
 					}
 					
-					
 					/*****INICIAMOS LAS VALIDACIONES DE TRANSACCIONES*****/
 					
 					/*****Validacion de Bodegas*****/
@@ -1111,23 +1110,7 @@ public class ValidacionDaoImpl implements ValidacionDao{
 						indGara=ConstantesGenerales.IndicadorCriterios.NONE.getTipoValor();
 						detalleFichaDevolucionBean.setIndGar(indGara);
 						detalleFichaDevolucionBean.setObsGarAprob("No es sujeto a Garantia");
-						detalleFichaDevolucionBean.setObsGarRechaz(ConstantesGenerales.GUION);		
-						
-						if(tipo.equals(ConstantesGenerales.TIPO_SMARTCARD) && rubro.equals(ConstantesGenerales.RUBRO_DECO) && tecnologia.equals(ConstantesGenerales.TECNOLOGIA_SMARTCARD)){
-							aplicaGarantia=false;
-						}
-
-						if(motivo.equals(ConstantesGenerales.MotivoDevolucionLiquidacion.DOAS.getTipoValor())){						
-							if(serie.equals(ConstantesGenerales.SINSERIE)){
-								indGara=ConstantesGenerales.IndicadorCriterios.NONE.getTipoValor();
-								detalleFichaDevolucionBean.setIndGar(indGara);
-								detalleFichaDevolucionBean.setObsGarAprob("No es sujeto a Garantia - No Aplica a DOAS - SIN SERIE");	
-								detalleFichaDevolucionBean.setObsGarRechaz(ConstantesGenerales.GUION);	
-								detalleFichaDevolucionBean.setValidacionGarantia(ConstantesGenerales.EstadoValidacionGarantia.NOAPLICA.getTipoValor());
-								aplicaGarantia=false;
-							}
-						}
-						
+						detalleFichaDevolucionBean.setObsGarRechaz(ConstantesGenerales.GUION);								
 					}else{
 						detalleFichaDevolucionBean.setIndGar(indGara);						
 						detalleFichaDevolucionBean.setObsGarAprob(obsGarAprob);
@@ -1343,19 +1326,35 @@ public class ValidacionDaoImpl implements ValidacionDao{
 					}
 					
 					
-					if(materialSAPBean6_0.getStatusSAP().equals(ConstantesGenerales.ExistenciaSAP.NOEXISTESAP.getTipoValor()) &&
-					   materialSAPBean4_7.getStatusSAP().equals(ConstantesGenerales.ExistenciaSAP.NOEXISTESAP.getTipoValor())){
+
+					
+					if(estadoValidacion.equals(ConstantesGenerales.EstadoValidacionActa.SINVALIDAR.getTipoValor())){
+						if(materialSAPBean6_0.getStatusSAP().equals(ConstantesGenerales.ExistenciaSAP.NOEXISTESAP.getTipoValor()) &&
+						   materialSAPBean4_7.getStatusSAP().equals(ConstantesGenerales.ExistenciaSAP.NOEXISTESAP.getTipoValor())){
 							detalleFichaDevolucionBean.setDiasGarantia(ConstantesGenerales.GUION);								
+						}
+						
+						if(tipo.equals(ConstantesGenerales.TIPO_SMARTCARD) && rubro.equals(ConstantesGenerales.RUBRO_DECO) && tecnologia.equals(ConstantesGenerales.TECNOLOGIA_SMARTCARD)){
+							indGara=ConstantesGenerales.IndicadorCriterios.NONE.getTipoValor();
+							detalleFichaDevolucionBean.setIndGar(indGara);
+							detalleFichaDevolucionBean.setObsGarAprob("No es sujeto a Garantia - No Aplica Tarjetas Inteligentes");	
+							detalleFichaDevolucionBean.setObsGarRechaz(ConstantesGenerales.GUION);	
+							detalleFichaDevolucionBean.setValidacionGarantia(ConstantesGenerales.EstadoValidacionGarantia.NOAPLICA.getTipoValor());
+						}	
+						
+						
+						if(motivo.equals(ConstantesGenerales.MotivoDevolucionLiquidacion.DOAS.getTipoValor())){ //Para el caso de DOAS SIN SERIE						
+							if(serie.equals(ConstantesGenerales.SINSERIE)){
+								indGara=ConstantesGenerales.IndicadorCriterios.NONE.getTipoValor();
+								detalleFichaDevolucionBean.setIndGar(indGara);
+								detalleFichaDevolucionBean.setObsGarAprob("No es sujeto a Garantia - No Aplica a DOAS - SIN SERIE");	
+								detalleFichaDevolucionBean.setObsGarRechaz(ConstantesGenerales.GUION);	
+								detalleFichaDevolucionBean.setValidacionGarantia(ConstantesGenerales.EstadoValidacionGarantia.NOAPLICA.getTipoValor());
+								aplicaGarantia=false;
+							}
+						}
 					}
 					
-					if(tipo.equals(ConstantesGenerales.TIPO_SMARTCARD) && rubro.equals(ConstantesGenerales.RUBRO_DECO) && tecnologia.equals(ConstantesGenerales.TECNOLOGIA_SMARTCARD)){
-						indGara=ConstantesGenerales.IndicadorCriterios.NONE.getTipoValor();
-						detalleFichaDevolucionBean.setIndGar(indGara);
-						detalleFichaDevolucionBean.setObsGarAprob("No es sujeto a Garantia - No Aplica Tarjetas Inteligentes");	
-						detalleFichaDevolucionBean.setObsGarRechaz(ConstantesGenerales.GUION);	
-						detalleFichaDevolucionBean.setValidacionGarantia(ConstantesGenerales.EstadoValidacionGarantia.NOAPLICA.getTipoValor());
-					}
-
 					
 					/*****Validacion Externa*****/
 					
@@ -1381,13 +1380,6 @@ public class ValidacionDaoImpl implements ValidacionDao{
 						indLote=detalleFichaDevolucionBean.getIndLote();
 						indGara=detalleFichaDevolucionBean.getIndGar();
 						
-						if(indBod.equals(ConstantesGenerales.IndicadorCriterios.RECHAZADO.getTipoValor()) || 
-						   indLote.equals(ConstantesGenerales.IndicadorCriterios.RECHAZADO.getTipoValor()) || 
-						   indGara.equals(ConstantesGenerales.IndicadorCriterios.RECHAZADO.getTipoValor())){
-							detalleFichaDevolucionBean.setEstado(ConstantesGenerales.EstadoValidacionActa.RECHAZADO.getTipoValor());
-						}
-						
-						
 						if(indGara.equals(ConstantesGenerales.IndicadorCriterios.APROBADO.getTipoValor()) || 
 						   indGara.equals(ConstantesGenerales.IndicadorCriterios.NONE.getTipoValor())){
 							detalleFichaDevolucionBean.setEstado(ConstantesGenerales.EstadoValidacionActa.APROBADO.getTipoValor());
@@ -1402,8 +1394,13 @@ public class ValidacionDaoImpl implements ValidacionDao{
 						
 						if(indGara.equals(ConstantesGenerales.IndicadorCriterios.PENDIENTE.getTipoValor())) {
 							detalleFichaDevolucionBean.setEstado(ConstantesGenerales.EstadoValidacionActa.PENDIENTE.getTipoValor());									
-						}							
-					
+						}		
+						
+						if(indBod.equals(ConstantesGenerales.IndicadorCriterios.RECHAZADO.getTipoValor()) || 
+						   indLote.equals(ConstantesGenerales.IndicadorCriterios.RECHAZADO.getTipoValor()) || 
+						   indGara.equals(ConstantesGenerales.IndicadorCriterios.RECHAZADO.getTipoValor())){
+								detalleFichaDevolucionBean.setEstado(ConstantesGenerales.EstadoValidacionActa.RECHAZADO.getTipoValor());
+						}
 
 						if(estadoValidacion.equals(ConstantesGenerales.EstadoValidacionActa.SINVALIDAR.getTipoValor())){
 							detalleFichaDevolucionBean.setObservacionAprobado(detalleFichaDevolucionBean.getObsBodAprob() + "/" + detalleFichaDevolucionBean.getObsLoteAprob() + "/" + detalleFichaDevolucionBean.getObsGarAprob());
@@ -1416,10 +1413,6 @@ public class ValidacionDaoImpl implements ValidacionDao{
 						}
 					}
 					
-					//if(baseValidacionExternaBean==null){
-
-
-				//	}
 					
 					/*****Asignar Modo Recojo*****/
 					
