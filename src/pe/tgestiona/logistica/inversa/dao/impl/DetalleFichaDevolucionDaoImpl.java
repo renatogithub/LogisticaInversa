@@ -1261,7 +1261,8 @@ public class DetalleFichaDevolucionDaoImpl implements DetalleFichaDevolucionDao 
 										}
 									}
 									break;
-							case 1: detalleFichaDevolucionBean.setDescripcion(dato.trim());
+							case 1: dato=util.descripcionSAPApostrofe(dato, "'", "''");								
+									detalleFichaDevolucionBean.setDescripcion(dato.trim());
 									break;								
 							case 2: if(dato.trim().equals("")){
 										detalleFichaDevolucionBean.setCodSAP(ConstantesGenerales.GUION);
@@ -1362,7 +1363,7 @@ public class DetalleFichaDevolucionDaoImpl implements DetalleFichaDevolucionDao 
 				for (int i = 0; i < lista.size(); i++) {
 					
 					//Verificamos si el campo Serie se encuentra vacio
-					if((lista.get(i).getSerie()==null ||lista.get(i).getSerie().trim().equals("") || lista.get(i).getSerie().trim().length()==0) &&
+					if((lista.get(i).getSerie()==null || lista.get(i).getSerie().trim().equals("") || lista.get(i).getSerie().trim().length()==0) &&
 					   (lista.get(0).getCantColumnasFicha()==ConstantesGenerales.CANTIDAD_COLUMNAS_FICHA)){
 						contSerie++;
 						if(contSerie==1){
@@ -1418,11 +1419,10 @@ public class DetalleFichaDevolucionDaoImpl implements DetalleFichaDevolucionDao 
 
 	@Override
 	public List<String> validarSeriesCaracteres(List<DetalleFichaDevolucionBean> lista) {
-		List<String> listaSeriesCaracteres=null;
 		Util util=new Util();
+		List<String> listaSeriesCaracteres=null;		
 		int contador=0;
 		String serie="";
-		String serieSinEspacios="";
 		String letra="";
 		boolean valido=true;
 		
@@ -1431,9 +1431,6 @@ public class DetalleFichaDevolucionDaoImpl implements DetalleFichaDevolucionDao 
 		
 		for(int i=0;i<lista.size();i++){
 			serie=lista.get(i).getSerie().trim().toUpperCase();
-
-			//serieSinEspacios=util.eliminarEspaciosBlanco(serie);			
-			
 			valido=false;
 			for(int l=0;l<serie.length();l++){
 				letra=serie.substring(l, (l+1));
@@ -1462,7 +1459,7 @@ public class DetalleFichaDevolucionDaoImpl implements DetalleFichaDevolucionDao 
 		List<String> listaObsTipoMaterial=null;
 		List<String> listaObsRubro=null;
 		List<String> listaObsTecnologia=null;
-		List<String> listaContenido=null;
+		List<String> listaObsContenido=null;
 		String sqlTipoMat = null;
 		String sqlRubro = null;
 		String sqlTecnologia = null;
@@ -1476,7 +1473,7 @@ public class DetalleFichaDevolucionDaoImpl implements DetalleFichaDevolucionDao 
 			listaObsTipoMaterial = new ArrayList<String>();
 			listaObsRubro = new ArrayList<String>();
 			listaObsTecnologia = new ArrayList<String>();
-			listaContenido = new ArrayList<String>();
+			listaObsContenido = new ArrayList<String>();
 									
 			for(int i=0;i<lista.size();i++){
 				sqlTipoMat="SELECT NOMTIPOMATERIAL FROM TIPOMATERIAL WHERE TRIM(NOMTIPOMATERIAL)='" + lista.get(i).getTipo().trim().toUpperCase() + "'";
@@ -1502,11 +1499,11 @@ public class DetalleFichaDevolucionDaoImpl implements DetalleFichaDevolucionDao 
 				}
 			}
 			
-			listaContenido.addAll(listaObsTipoMaterial);
-			listaContenido.addAll(listaObsRubro);
-			listaContenido.addAll(listaObsTecnologia);
+			listaObsContenido.addAll(listaObsTipoMaterial);
+			listaObsContenido.addAll(listaObsRubro);
+			listaObsContenido.addAll(listaObsTecnologia);
 		} catch (SQLException ex) {
-			listaContenido = null;
+			listaObsContenido = null;
 			System.out.println("Ha surgido la siguiente Excepcion:" + ex.getMessage());
 		} finally {
 			try {
@@ -1515,14 +1512,13 @@ public class DetalleFichaDevolucionDaoImpl implements DetalleFichaDevolucionDao 
 				System.out.println("Ha surgido la siguiente Excepcion:" + e.getMessage());
 			}
 		}
-		return listaContenido;
+		return listaObsContenido;
 	}
 
 	@Override
 	public List<String> validarCorrespondencia(List<DetalleFichaDevolucionBean> lista) {
 		List<String> listaObsCorrespondencia=null;
 		String sql="";
-
 		Connection cn = null;
 		try {
 			cn = dataSource.getConnection();
@@ -1561,48 +1557,66 @@ public class DetalleFichaDevolucionDaoImpl implements DetalleFichaDevolucionDao 
 	public List<ErroresBean> obtenerTiposErroresFicha(List<DetalleFichaDevolucionBean> lista,String formato) {
 		List<ErroresBean> lstTiposErrores=null;
 		lstTiposErrores=new ArrayList<ErroresBean>();
-		
-		List<String> lstCantCampos=new ArrayList<String>();
+		ErroresBean erroresBean=null;		
+
+		List<String> lstCantidadCampos=new ArrayList<String>();
 		List<String> lstCamposVacios=new ArrayList<String>();
 		List<String> lstCaracteresSeries=new ArrayList<String>();
-		List<String> lstContenido=new ArrayList<String>();
-		List<String> lstCorrespondencia=new ArrayList<String>();
 		List<String> lstCantidadSeries=new ArrayList<String>();
 		List<String> lstLongitudSeries=new ArrayList<String>();
-		
-		
-		
-		if(lista.get(0).getCodSAP()==null || (lista.get(0).getCantColumnasFicha()>ConstantesGenerales.CANTIDAD_COLUMNAS_FICHA || lista.get(0).getCantColumnasFicha()<ConstantesGenerales.CANTIDAD_COLUMNAS_FICHA)){
-			lstCantCampos=validarCantidadCampos(lista);			
+		List<String> lstContenido=new ArrayList<String>();
+		List<String> lstCorrespondencia=new ArrayList<String>();
+
+		if((lista.get(0).getCodSAP()==null) || (lista.get(0).getCantColumnasFicha()!=ConstantesGenerales.CANTIDAD_COLUMNAS_FICHA)){
+			lstCantidadCampos=validarCantidadCampos(lista);			
 		}
 		
 		if(lista.get(0).getCantColumnasFicha()==ConstantesGenerales.CANTIDAD_COLUMNAS_FICHA){
-			lstCamposVacios=validarCamposVacios(lista);
-			lstCaracteresSeries=validarSeriesCaracteres(lista);
-			lstContenido=validarContenido(lista);
-			lstCorrespondencia=validarCorrespondencia(lista);
-			lstLongitudSeries=validarLongitudSeries(lista);
+			lstCamposVacios=validarCamposVacios(lista); //Verifica que ciertos campos NO ESTEN VACIOS
+			lstCaracteresSeries=validarSeriesCaracteres(lista); //Verifica que las series tengan caracteres permitidos.
 			if(formato.equals(ConstantesGenerales.TipoFormatoDevolucion.OTROS.getTipoValor())){
-				lstCantidadSeries=validarCantidadSeries(lista);
+				lstCantidadSeries=validarCantidadSeries(lista); //Si el tipo de formato es OTROS, se establece la cantidad de series.
 			}
+			lstLongitudSeries=validarLongitudSeries(lista); //Verifica que la Longitud de la Serie sea la establecida.
+			lstContenido=validarContenido(lista); //Verifica que el contenido de TIPO, RUBRO y TECNOLOGIA coincidan.
+			lstCorrespondencia=validarCorrespondencia(lista); //Verifica que la categoria de por TIPO - RUBRO - TECNOLOGIA coincidan con la del material.
 		}
 		
-		ErroresBean erroresBean=null;
+		if(lstCantidadCampos.size()>0){
+			erroresBean=new ErroresBean();
+			erroresBean.setCodError(ConstantesGenerales.TipoErroresFicha.CANTIDADCAMPOS.getTipoValor());
+			erroresBean.setNomError("Cantidad de Campos Incorrecto");
+			lstTiposErrores.add(erroresBean);
+		}
+		
 		if(lstCamposVacios.size()>0){
 			erroresBean=new ErroresBean();
 			erroresBean.setCodError(ConstantesGenerales.TipoErroresFicha.CAMPOSVACIOS.getTipoValor());
 			erroresBean.setNomError("Campos Vacios");
 			lstTiposErrores.add(erroresBean);
-		}
-		
+		}		
 		
 		if(lstCaracteresSeries.size()>0){
 			erroresBean=new ErroresBean();
 			erroresBean.setCodError(ConstantesGenerales.TipoErroresFicha.CARACTERESSERIE.getTipoValor());
-			erroresBean.setNomError("La serie contiene caracteres extraños");
+			erroresBean.setNomError("La serie contiene caracteres no permitidos");
+			lstTiposErrores.add(erroresBean);
+		}		
+		
+		if(lstCantidadSeries.size()>0){
+			erroresBean=new ErroresBean();
+			erroresBean.setCodError(ConstantesGenerales.TipoErroresFicha.CANTIDADSERIES.getTipoValor());
+			erroresBean.setNomError("Cantidad de Series No Permitidas");
 			lstTiposErrores.add(erroresBean);
 		}
 		
+		if(lstLongitudSeries.size()>0){
+			erroresBean=new ErroresBean();
+			erroresBean.setCodError(ConstantesGenerales.TipoErroresFicha.LONGITUDSERIES.getTipoValor());
+			erroresBean.setNomError("Longitud de Series Invalidas");
+			lstTiposErrores.add(erroresBean);
+		}
+
 		if(lstContenido.size()>0){
 			erroresBean=new ErroresBean();
 			erroresBean.setCodError(ConstantesGenerales.TipoErroresFicha.CONTENIDO.getTipoValor());
@@ -1614,27 +1628,6 @@ public class DetalleFichaDevolucionDaoImpl implements DetalleFichaDevolucionDao 
 			erroresBean=new ErroresBean();
 			erroresBean.setCodError(ConstantesGenerales.TipoErroresFicha.CORRESPONDENCIA.getTipoValor());
 			erroresBean.setNomError("Los siguientes campos tienen correspondencia errada");
-			lstTiposErrores.add(erroresBean);
-		}
-		
-		if(lstCantCampos.size()>0){
-			erroresBean=new ErroresBean();
-			erroresBean.setCodError(ConstantesGenerales.TipoErroresFicha.CANTIDADCAMPOS.getTipoValor());
-			erroresBean.setNomError("Cantidad de Campos Incorrecto");
-			lstTiposErrores.add(erroresBean);
-		}
-
-		if(lstCantidadSeries.size()>0){
-			erroresBean=new ErroresBean();
-			erroresBean.setCodError(ConstantesGenerales.TipoErroresFicha.CANTIDADSERIES.getTipoValor());
-			erroresBean.setNomError("Cantidad de Series Invalidas");
-			lstTiposErrores.add(erroresBean);
-		}
-		
-		if(lstLongitudSeries.size()>0){
-			erroresBean=new ErroresBean();
-			erroresBean.setCodError(ConstantesGenerales.TipoErroresFicha.LONGITUDSERIES.getTipoValor());
-			erroresBean.setNomError("Longitud de Series Invalidas");
 			lstTiposErrores.add(erroresBean);
 		}
 				

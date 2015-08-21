@@ -301,6 +301,89 @@ public class Test {
 		
 		System.out.println("Mi fechax:" + util.obtenerFechaAnteriorHistorial(3,"03/07/2015"));
 		
-	}
+		System.out.println("***Busqueda de Caracter***");
+		
+		// Texto
+		//String descripcionSAP="PC'S SOBREMESA";
+//		String descripcionSAP="OBRA CIVIL CAP'S";
+		//String descripcionSAP="MI TEXTO PRUEBA''";
+//	    String descripcionSAP="'MI TEXTO PRUEBA";
+		
+		//String descripcionSAP="OBRA CIVIL CAP''S";
+	    
+	//    String descripcionSAP="''MI TEXTO PRUEBA";
+	    
+	  //  String descripcionSAP="'''MI TEX'TO P''RUE'BA'";
+	    
+		String descripcionSAP="bienvenido renato";
+	    String nuevaDescripcionSAP=util.descripcionSAPApostrofe(descripcionSAP, "'", "''");
+	    System.out.println("nuevaDescripcionSAP:" + nuevaDescripcionSAP);
+	    
+	    
+/*		// Texto que vamos a buscar
+		char sTextoBuscado = '\'';
+		// Contador de ocurrencias 
+	    int contador = 0;
+	    String apostrofeModificado="''";
+	    String nuevaDescripcionSAP="";
+	    
+	    int posCaracter=descripcionSAP.indexOf(sTextoBuscado);
+	    	
+	    System.out.println("Posicion Caracter:" + posCaracter);
+	    System.out.println("Tamaño:" + descripcionSAP.length());
+	    String[] arrayApostrofe = descripcionSAP.trim().split("'");
+	    for (int i = 0; i < arrayApostrofe.length; i++) {
+	    	System.out.println("Array Apostrofe[" + i + "]:" + arrayApostrofe[i]);
+	    }
 
+	    for (int i = 0; i < arrayApostrofe.length; i++) {
+	    	if(i<=arrayApostrofe.length-2){
+		    	nuevaDescripcionSAP=nuevaDescripcionSAP + arrayApostrofe[i] + apostrofeModificado;	    		
+	    	}else{
+	    		nuevaDescripcionSAP=nuevaDescripcionSAP + arrayApostrofe[i];
+	    	}
+
+	    }
+	    
+	    System.out.println("nuevaDescripcionSAP:" + nuevaDescripcionSAP);*/
+	    
+/*	    int posCaracter=descripcionSAP.indexOf(sTextoBuscado);
+	    int longitudTexto=descripcionSAP.length();
+	    
+	    if(posCaracter>-1){
+		    System.out.println ("Existe el caracter en la posicion: " + posCaracter);
+		    
+		    if(posCaracter==0 || posCaracter==(longitudTexto-1)){
+		    	apostrofeModificado="''";
+		    }else{
+		    	apostrofeModificado="''";
+		    }
+		    
+		    System.out.println("Antes del Apostrofe: " +  descripcionSAP.substring(0, posCaracter));
+		    System.out.println("Despues del Apostrofe: " +  descripcionSAP.substring(posCaracter+1));
+		    System.out.println("Texto completo: " +  descripcionSAP.substring(0, posCaracter) + apostrofeModificado + descripcionSAP.substring(posCaracter+1));
+	    }else{
+		    System.out.println ("No Existe el caracter y su valor esn: " + posCaracter);
+	    }
+	    
+	    
+	    while (descripcionSAP.indexOf(sTextoBuscado) > -1) {
+	    	descripcionSAP = descripcionSAP.substring(descripcionSAP.indexOf(
+		        sTextoBuscado)+sTextoBuscado.length(),descripcionSAP.length());
+		      contador++; 
+		    }
+
+		    System.out.println (contador);
+		    System.out.println (descripcionSAP.indexOf(sTextoBuscado));
+		    
+		    System.out.println("***Extraer caracteres***");
+		    
+		    String sTexto="Mi nombre es Renato";
+		    
+		    System.out.println("A partir de x a y: " +  sTexto.substring(0, 4));
+
+		    System.out.println("Desde: " +  sTexto.substring(4));
+		
+	}*/
+	}
 }

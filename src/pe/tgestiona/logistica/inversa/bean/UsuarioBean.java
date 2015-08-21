@@ -81,16 +81,4 @@ public class UsuarioBean{
 		this.estado = estado;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

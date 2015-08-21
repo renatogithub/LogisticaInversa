@@ -61,6 +61,7 @@ public class MaterialSAPDaoImpl implements MaterialSAPDao{
 
 			for (int i = 0; i < lista.size(); i++) {
 				if(tipoSAP.equals(ConstantesGenerales.SAP_6_0)){
+					
 					if(lista.get(i).getModificadoEl()==null){
 						modificadoEl="";
 					}else{
@@ -157,7 +158,7 @@ public class MaterialSAPDaoImpl implements MaterialSAPDao{
 	@Override
 	public List<MaterialSAPBean> leerarchivoSAPSeriado(InputStream file,String tipoExcel) {
 		List<MaterialSAPBean> listMaterialSAP = null;
-		
+		Util util=new Util();
 		if(tipoExcel.equals(ConstantesGenerales.EXCEL_XLSX)){
 			try {
 				// Finds the workbook instance for XLSX file
@@ -220,7 +221,7 @@ public class MaterialSAPDaoImpl implements MaterialSAPDao{
 								case 4: if(cell==null){
 											materialSAPBean.setDenominacion("");
 										}else{
-											materialSAPBean.setDenominacion(cell.getStringCellValue());											
+											materialSAPBean.setDenominacion(util.descripcionSAPApostrofe(cell.getStringCellValue(),"'","''"));											
 										}
 										break;
 								case 5: if(cell==null){
@@ -255,6 +256,10 @@ public class MaterialSAPDaoImpl implements MaterialSAPDao{
 											if(cell.getCellType()==Cell.CELL_TYPE_STRING){										
 												materialSAPBean.setModificadoEl(cell.getStringCellValue());
 											}
+											
+											if(cell.getCellType()==Cell.CELL_TYPE_BLANK){										
+												materialSAPBean.setModificadoEl("");
+											}
 										}										
 										break;
 								case 9: if(cell==null){
@@ -275,6 +280,10 @@ public class MaterialSAPDaoImpl implements MaterialSAPDao{
 											}
 											if(cell.getCellType()==Cell.CELL_TYPE_STRING){										
 												materialSAPBean.setCreadoEl(cell.getStringCellValue());
+											}
+											
+											if(cell.getCellType()==Cell.CELL_TYPE_BLANK){										
+												materialSAPBean.setCreadoEl("");
 											}
 										}										
 										break;
@@ -341,9 +350,13 @@ public class MaterialSAPDaoImpl implements MaterialSAPDao{
 								case 7: materialSAPBean.setStatuSistema(nombre);
 										break;
 								case 8: Date fechaModificado = null;
-										fechaModificado = formatoDelTexto.parse(nombre);					
-										String strFechaModificado = formatter1.format(fechaModificado);
-										materialSAPBean.setModificadoEl(String.valueOf(strFechaModificado));
+										if(nombre.equals("") || nombre==null){
+											materialSAPBean.setModificadoEl("");
+										}else{
+											fechaModificado = formatoDelTexto.parse(nombre);					
+											String strFechaModificado = formatter1.format(fechaModificado);
+											materialSAPBean.setModificadoEl(String.valueOf(strFechaModificado));											
+										}
 										break;
 								case 9: materialSAPBean.setModificadoPor(nombre);
 										break;
@@ -611,9 +624,9 @@ public class MaterialSAPDaoImpl implements MaterialSAPDao{
 	}
 
 	@Override
-	public List<MaterialSAPBean> leerarchivoSAPNoSeriado(InputStream file,String tipoExcel) {
-		
+	public List<MaterialSAPBean> leerarchivoSAPNoSeriado(InputStream file,String tipoExcel) {	
 		List<MaterialSAPBean> listMaterialSAP = null;
+		Util util=new Util();
 		
 		if(tipoExcel.equals(ConstantesGenerales.EXCEL_XLSX)){
 			try {
@@ -645,7 +658,11 @@ public class MaterialSAPDaoImpl implements MaterialSAPDao{
 											materialSAPBean.setCodMaterial(cell.getStringCellValue());
 										}
 										break;									
-								case 1: materialSAPBean.setDenominacion(cell.getStringCellValue());
+								case 1: if(cell==null){
+											materialSAPBean.setDenominacion("");
+										}else{
+											materialSAPBean.setDenominacion(util.descripcionSAPApostrofe(cell.getStringCellValue(),"'","''"));											
+										}
 										break;
 								case 2: materialSAPBean.setCentro(cell.getStringCellValue());
 										break;

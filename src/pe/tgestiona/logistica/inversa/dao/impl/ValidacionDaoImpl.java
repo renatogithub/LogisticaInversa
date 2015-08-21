@@ -45,7 +45,7 @@ public class ValidacionDaoImpl implements ValidacionDao{
 	public TallerBean existeGarantiaTaller(String serie, String material) {
 		Util util=new Util();
 		TallerBean tallerBean=null;		
-		String sql="SELECT FECHARECEP,REMOZ_REPARADO FROM TALLER WHERE LPAD(TRIM(UPPER(SERIE)),25,'0')='" + util.rellenar(serie, 25) + "' AND LPAD(TRIM(UPPER(MATERIAL)),20,'0')='" + util.rellenar(material.trim(), 20) + "' AND REMOZ_REPARADO IN ('REMOZADO','REPARADO')";
+		String sql="SELECT FECHARECEP,REMOZ_REPARADO FROM TALLER WHERE LPAD(TRIM(UPPER(SERIE)),25,'0')='" + util.rellenar(serie, 25) + "' AND LPAD(TRIM(UPPER(MATERIAL)),20,'0')='" + util.rellenar(material.trim(), 20) + "' AND REMOZ_REPARADO IN ('REMOZADO','REPARADO') ORDER BY FECHARECEP DESC";
 		Connection cn = null;
 		try {
 			cn = dataSource.getConnection();

@@ -3,6 +3,9 @@ package pe.tgestiona.logistica.inversa.bean;
 public class FichaDevolucionBean {
 	private String nroTicket;
 	private String fechaCarga;
+	private String fechaSolicitud;
+	private String fechaProceso;
+	private String fechaDevolucion;
 	private String usuario;
 	private String codTipoDevolucion;
 	private String tipoDevolucion;
@@ -13,8 +16,8 @@ public class FichaDevolucionBean {
 	private int cantidadItem;
 	private String nombre;
 	private String mesGestion;
-	private String estado;	
-	private String fechaSolicitud;
+	private String mesDevolucion;
+	private String estado;		
 	private String horaSolicitud;
 	private String enviado;
 	private String destino;
@@ -22,10 +25,9 @@ public class FichaDevolucionBean {
 	private boolean retaceria;
 	private String zonal;
 	private String esPedido;
+	private String conPedido;
 	private String prefijoActa;
-	private String fechaDevolucion;
-	private String mesDevolucion;
-
+	private String observacionAnulado;
 	
 	public FichaDevolucionBean() {
 		super();
@@ -38,7 +40,6 @@ public class FichaDevolucionBean {
 	public void setCanal(String canal) {
 		this.canal = canal;
 	}
-
 	
 	public String getNroTicket() {
 		return nroTicket;
@@ -209,8 +210,28 @@ public class FichaDevolucionBean {
 		this.gestorActa = gestorActa;
 	}
 
+	public String getFechaProceso() {
+		return fechaProceso;
+	}
 
-	
-	
-	
+	public void setFechaProceso(String fechaProceso) {
+		this.fechaProceso = fechaProceso;
+	}
+
+	public String getConPedido() {
+		return conPedido;
+	}
+
+	public void setConPedido(String conPedido) {
+		this.conPedido = conPedido;
+	}
+
+	public String getObservacionAnulado() {
+		return observacionAnulado;
+	}
+
+	public void setObservacionAnulado(String observacionAnulado) {
+		this.observacionAnulado = observacionAnulado;
+	}
+
 }

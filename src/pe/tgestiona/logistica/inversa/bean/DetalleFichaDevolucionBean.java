@@ -1,6 +1,7 @@
 package pe.tgestiona.logistica.inversa.bean;
 
-public class DetalleFichaDevolucionBean {
+public class DetalleFichaDevolucionBean {	
+	//Datos de Ingreso
 	private String nroTicket;
 	private int nro;
 	private String descripcion;
@@ -9,9 +10,11 @@ public class DetalleFichaDevolucionBean {
 	private String tipo;
 	private String rubro;
 	private String tecnologia;
-	private double cantMateriales;
 	private String pesoRRSS;
 	private String volumenRRSS;
+	private double cantMateriales;
+
+	//Datos del SAP 6.0
 	private String serieSAP_6_0;
 	private String codMaterialSAP_6_0;
 	private String desMaterialSAP_6_0;
@@ -25,13 +28,7 @@ public class DetalleFichaDevolucionBean {
 	private String creadoPor_6_0;
 	private String fechaIngresoSAP_6_0;
 	private String fechaUltimoMovSAP_6_0;
-	private String negocio;
-	private String peso;
-	private String precio;
-	private String volUnitario;
-	private String sociedad;
-	private String seriado;
-	private String provision;
+	//Datos del SAP 4.7
 	private String statusSAP_6_0;
 	private String serieSAP_4_7;
 	private String codMaterialSAP_4_7;
@@ -47,6 +44,16 @@ public class DetalleFichaDevolucionBean {
 	private String fechaIngresoSAP_4_7;
 	private String fechaUltimoMovSAP_4_7;
 	private String statusSAP_4_7;
+	//Datos de Material
+	private String negocio;
+	private String peso;
+	private String precio;
+	private String volUnitario;
+	private String sociedad;
+	private String seriado;
+	private String provision;
+
+	//Datos de Validacion
 	private String validacionGarantia;
 	private String diasGarantia;
 	private String estado;

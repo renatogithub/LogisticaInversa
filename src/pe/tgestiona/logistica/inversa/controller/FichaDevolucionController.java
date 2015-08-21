@@ -234,35 +234,31 @@ public class FichaDevolucionController {
 		String mensaje=null;
 		String prefijo=null;
 		String fechaDevolucion=null;
-        String mySesion =(String)sesion.getAttribute("issubmit");        
+		boolean esretaceria=false;
+		String usuario = req.getParameter("h_usuario");
+        String mySesion =(String)sesion.getAttribute("issubmit");  
+        //Pestaña: Datos del Acta
+        String codTipoFormato=req.getParameter("h_tipoFormato");
+        String nomTipoFormato=req.getParameter("h_nomtipoFormato");
 		String devolucion = req.getParameter("h_devolucion");
-		String nomdevolucion = req.getParameter("h_tdevolucion");		
-		String codTipoFormato=req.getParameter("h_tipoFormato");
-		String nomTipoFormato=req.getParameter("h_nomtipoFormato");
+		String nomdevolucion = req.getParameter("h_tdevolucion");						
 		String rubroDevoluci=req.getParameter("chkRubroDevoluci");
-		String tipoPrefijo=req.getParameter("rdbPrefijo");
-		String rubro=req.getParameter("h_Rubro");
-		String abrvDevolucion=req.getParameter("h_abrvdevolucion");	
-		String entidad = req.getParameter("h_entidad");
-		String nomentidad = req.getParameter("h_nomentidad");
+		esretaceria=rubroDevoluci==null?false:true;
 		String fCorreo = req.getParameter("t_fCorreo");
 		String hCorreo = req.getParameter("t_hCorreo");
-		String idCorreoGestor = req.getParameter("h_idCorreoGestor");
-		String cboEnviado = req.getParameter("cboEnviado");		
-		String cboDestinoFisico = req.getParameter("cboDestinoFisico");
-		String usuario = req.getParameter("h_usuario");
 		String mesDevolucion=req.getParameter("rdbMesDevolucion");
 		String cboMesDevolucion=req.getParameter("cboMesDevolucion");
 		String cboAnioDevolucion=req.getParameter("cboAnioDevolucion");
-		
-		boolean esretaceria=false;
-		
-		if(rubroDevoluci==null){
-			esretaceria=false;
-		}else{
-			esretaceria=true;
-		}
-		
+		String cboEnviado = req.getParameter("cboEnviado");		
+		String cboDestinoFisico = req.getParameter("cboDestinoFisico");				
+		String tipoPrefijo=req.getParameter("rdbPrefijo");
+		String rubro=req.getParameter("h_Rubro");
+		String abrvDevolucion=req.getParameter("h_abrvdevolucion");	
+        //Pestaña: Datos del Punto
+		String entidad = req.getParameter("h_entidad");
+		String nomentidad = req.getParameter("h_nomentidad");
+		String idCorreoGestor = req.getParameter("h_idCorreoGestor");
+	
 		if(mesDevolucion.equals(ConstantesGenerales.NOAPLICA)){
 			mesDevolucion=ConstantesGenerales.NOAPLICA;
 			fechaDevolucion=ConstantesGenerales.NOAPLICA;
@@ -279,15 +275,13 @@ public class FichaDevolucionController {
 			prefijo=rubro;
 		}
 		
-		prefijo=prefijo + "-" + abrvDevolucion;
-		
-		
 		if(usuario!=null){
 			usuario=usuario.toLowerCase();
 		}		
 		
 		String mesanio=fCorreo.substring(3, 5) + fCorreo.substring(8,10);
 		
+		prefijo=prefijo + "-" + abrvDevolucion;		
 		prefijo=prefijo + "-" + mesanio;
 		
 		FichaDevolucionBean fichaDevolucionBean=new FichaDevolucionBean();
@@ -323,8 +317,10 @@ public class FichaDevolucionController {
         }       	
 		
         fichaDevolucionBean.setNombre(fileNames.get(0).trim());
+                
+        //Leemos el archivo del detalle y verificaremos que el archivo fuente cumpla con las especificaciones
+        //de validacion.
         
-        //Leemos el archivo Detalle y obtenemos la lista de errores
         List<DetalleFichaDevolucionBean> lstDetaFichaDevolucion=fichaDevolucionService.leerarchivoExcel(lstInputStream.get(0));
         List<ErroresBean> lstErrores=new ArrayList<ErroresBean>();
         lstErrores=fichaDevolucionService.obtenerTiposErroresFicha(lstDetaFichaDevolucion,codTipoFormato);
@@ -338,66 +334,49 @@ public class FichaDevolucionController {
 	    	for(int i=0;i<lstErrores.size();i++){
 	    		
 	    		if(lstDetaFichaDevolucion!=null){
-		    		if(!devolucion.equals(ConstantesGenerales.MotivoDevolucionLiquidacion.SINSERIE.getTipoValor())){
-			    		if(lstErrores.get(i).getCodError().equals(ConstantesGenerales.TipoErroresFicha.CAMPOSVACIOS.getTipoValor())){    				
-			    			tbErrores=tbErrores + "<tr><td style='width:5%;'>" + (i+1) + "</td><td style='width:35%;text-align:left;'>" + lstErrores.get(i).getNomError() + "</td><td style='text-align:left;'>";
-			    			List<String> listCamposIncompletos=fichaDevolucionService.validarCamposVacios(lstDetaFichaDevolucion);
-			    			for(int j=0;j<listCamposIncompletos.size();j++){
-				    			tbErrores=tbErrores + "<strong>* Campo: </strong>" + listCamposIncompletos.get(j) + "<br>";
-			    			}
-			    				
-			    				tbErrores=tbErrores + "</td></tr>";	    	    		
-			    		}
+	    			if(lstErrores.get(i).getCodError().equals(ConstantesGenerales.TipoErroresFicha.CAMPOSVACIOS.getTipoValor())){    				
+			    		tbErrores=tbErrores + "<tr><td style='width:5%;'>" + (i+1) + "</td><td style='width:35%;text-align:left;'>" + lstErrores.get(i).getNomError() + "</td><td style='text-align:left;'>";
+			    		List<String> listCamposIncompletos=fichaDevolucionService.validarCamposVacios(lstDetaFichaDevolucion);
+			    		for(int j=0;j<listCamposIncompletos.size();j++){
+				    		tbErrores=tbErrores + "<strong>* Campo: </strong>" + listCamposIncompletos.get(j) + "<br>";
+			    		}			    				
+			    			tbErrores=tbErrores + "</td></tr>";	    	    		
+			    	}
+		    		
+			    	if(lstErrores.get(i).getCodError().equals(ConstantesGenerales.TipoErroresFicha.CARACTERESSERIE.getTipoValor())){
+			    	    tbErrores=tbErrores + "<tr><td style='width:5%;'>" + (i+1) + "</td><td style='width:35%;text-align:left;'>" + lstErrores.get(i).getNomError() + "</td><td style='text-align:left;'>";
+			    	    List<String> listCaracteresSerie=fichaDevolucionService.validarSeriesCaracteres(lstDetaFichaDevolucion);	
+			    		for(int j=0;j<listCaracteresSerie.size();j++){
+				    		tbErrores=tbErrores + "<strong>*</strong>" + listCaracteresSerie.get(j) + "<br>";
+			    		}	    	    		
+			    			tbErrores=tbErrores + "</td></tr>";
 		    		}
 		    		
-
-		    		if(!devolucion.equals(ConstantesGenerales.MotivoDevolucionLiquidacion.SINSERIE.getTipoValor())){
-			    		if(lstErrores.get(i).getCodError().equals(ConstantesGenerales.TipoErroresFicha.CARACTERESSERIE.getTipoValor())){
-			    	    	tbErrores=tbErrores + "<tr><td style='width:5%;'>" + (i+1) + "</td><td style='width:35%;text-align:left;'>" + lstErrores.get(i).getNomError() + "</td><td style='text-align:left;'>";
-			    	    	List<String> listCaracteresSerie=fichaDevolucionService.validarSeriesCaracteres(lstDetaFichaDevolucion);
-			    	    		
-			    			for(int j=0;j<listCaracteresSerie.size();j++){
-				    			tbErrores=tbErrores + "<strong>*</strong>" + listCaracteresSerie.get(j) + "<br>";
-			    			}	    	    		
-			    				tbErrores=tbErrores + "</td></tr>";
-			    		}
+			    	if(lstErrores.get(i).getCodError().equals(ConstantesGenerales.TipoErroresFicha.CONTENIDO.getTipoValor())){
+			    		tbErrores=tbErrores + "<tr><td style='width:5%;'>" + (i+1) + "</td><td style='width:35%;text-align:left;'>" + lstErrores.get(i).getNomError() + "</td><td style='text-align:left;'>";
+			    	    List<String> listContenido=fichaDevolucionService.validarContenido(lstDetaFichaDevolucion);			    	    	
+			    		for(int j=0;j<listContenido.size();j++){
+				    		tbErrores=tbErrores + "<strong>*</strong>" + listContenido.get(j) + "<br>";
+			    		}	    	    		
+			    			tbErrores=tbErrores + "</td></tr>";
 		    		}
 		    		
-		    		if(!devolucion.equals(ConstantesGenerales.MotivoDevolucionLiquidacion.SINSERIE.getTipoValor())){
-			    		if(lstErrores.get(i).getCodError().equals(ConstantesGenerales.TipoErroresFicha.CONTENIDO.getTipoValor())){
-			    	    	tbErrores=tbErrores + "<tr><td style='width:5%;'>" + (i+1) + "</td><td style='width:35%;text-align:left;'>" + lstErrores.get(i).getNomError() + "</td><td style='text-align:left;'>";
-			    	    	List<String> listContenido=fichaDevolucionService.validarContenido(lstDetaFichaDevolucion);
-			    	    	
-			    			for(int j=0;j<listContenido.size();j++){
-				    			tbErrores=tbErrores + "<strong>*</strong>" + listContenido.get(j) + "<br>";
-			    			}	    	    		
-			    				tbErrores=tbErrores + "</td></tr>";
-			    		}
-		    		}
-		    		
-		    		if(!devolucion.equals(ConstantesGenerales.MotivoDevolucionLiquidacion.SINSERIE.getTipoValor())){
-			    		if(lstErrores.get(i).getCodError().equals(ConstantesGenerales.TipoErroresFicha.CORRESPONDENCIA.getTipoValor())){
-			    	    	tbErrores=tbErrores + "<tr><td style='width:5%;'>" + (i+1) + "</td><td style='width:35%;text-align:left;'>" + lstErrores.get(i).getNomError() + "</td><td style='text-align:left;'>";
-			    	    	List<String> listCorrespondencia=fichaDevolucionService.validarCorrespondencia(lstDetaFichaDevolucion);
-			    	    		
-			    			for(int j=0;j<listCorrespondencia.size();j++){
-				    			tbErrores=tbErrores + "<strong>*</strong>" + listCorrespondencia.get(j) + "<br>";
-			    			}	    	    		
-			    				tbErrores=tbErrores + "</td></tr>";	    				
-			    		}
+			    	if(lstErrores.get(i).getCodError().equals(ConstantesGenerales.TipoErroresFicha.CORRESPONDENCIA.getTipoValor())){
+			    	    tbErrores=tbErrores + "<tr><td style='width:5%;'>" + (i+1) + "</td><td style='width:35%;text-align:left;'>" + lstErrores.get(i).getNomError() + "</td><td style='text-align:left;'>";
+			    	    List<String> listCorrespondencia=fichaDevolucionService.validarCorrespondencia(lstDetaFichaDevolucion);			    	    		
+			    		for(int j=0;j<listCorrespondencia.size();j++){
+				    		tbErrores=tbErrores + "<strong>*</strong>" + listCorrespondencia.get(j) + "<br>";
+			    		}	    	    		
+			    			tbErrores=tbErrores + "</td></tr>";	    				
 		    		}	
 		    		
-		    		if(!devolucion.equals(ConstantesGenerales.MotivoDevolucionLiquidacion.SINSERIE.getTipoValor())){
-			    		if(lstErrores.get(i).getCodError().equals(ConstantesGenerales.TipoErroresFicha.CANTIDADCAMPOS.getTipoValor())){
-			    	    	tbErrores=tbErrores + "<tr><td style='width:5%;'>" + (i+1) + "</td><td style='width:35%;text-align:left;'>" + lstErrores.get(i).getNomError() + "</td><td style='text-align:left;'>";
-			    	    	List<String> listCantidadCampos=fichaDevolucionService.validarCantidadCampos(lstDetaFichaDevolucion);
-			    	    		
-			    			for(int j=0;j<listCantidadCampos.size();j++){
-				    			tbErrores=tbErrores + "<strong>*</strong>" + listCantidadCampos.get(j) + "<br>";
-			    			}
-			    	    		
-			    				tbErrores=tbErrores + "</td></tr>";
+			    	if(lstErrores.get(i).getCodError().equals(ConstantesGenerales.TipoErroresFicha.CANTIDADCAMPOS.getTipoValor())){
+			    		tbErrores=tbErrores + "<tr><td style='width:5%;'>" + (i+1) + "</td><td style='width:35%;text-align:left;'>" + lstErrores.get(i).getNomError() + "</td><td style='text-align:left;'>";
+			    	    List<String> listCantidadCampos=fichaDevolucionService.validarCantidadCampos(lstDetaFichaDevolucion);	
+			    		for(int j=0;j<listCantidadCampos.size();j++){
+				    		tbErrores=tbErrores + "<strong>*</strong>" + listCantidadCampos.get(j) + "<br>";
 			    		}
+			    	    	tbErrores=tbErrores + "</td></tr>";
 		    		}		    		
 	    		}
 

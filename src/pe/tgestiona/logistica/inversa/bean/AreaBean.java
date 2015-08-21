@@ -1,3 +1,7 @@
+/**
+ * Autor: Renato Ponce
+ */
+
 package pe.tgestiona.logistica.inversa.bean;
 
 import java.io.Serializable;

@@ -431,23 +431,6 @@ public class Util {
 		return fechaInicio;
 	}
 	
-	public List<String> lstMesLetras(){
-		List<String> listMes=new ArrayList<String>();
-		listMes.add("ENERO");
-		listMes.add("FEBRERO");
-		listMes.add("MARZO");
-		listMes.add("ABRIL");
-		listMes.add("MAYO");
-		listMes.add("JUNIO");
-		listMes.add("JULIO");
-		listMes.add("AGOSTO");
-		listMes.add("SETIEMBRE");
-		listMes.add("OCTUBRE");
-		listMes.add("NOVIEMBRE");
-		listMes.add("DICIEMBRE");
-	
-		return listMes;
-	}	
 	
 	public String obtenerMesDigitos(String mes){
 		String mesDigito="";
@@ -503,6 +486,22 @@ public class Util {
 		}
 		
 		return serieSinEspacios;
+	}
+	
+	public String descripcionSAPApostrofe(String descripcionSAP,String sTextoBuscado,String sTextoReemplazado){
+		String nuevaDescripcionSAP="";
+		String[] arraysTextoBuscado = descripcionSAP.trim().split(sTextoBuscado);
+	    
+	    for (int i = 0; i < arraysTextoBuscado.length; i++) {
+	    	if(i<=arraysTextoBuscado.length-2){
+		    	nuevaDescripcionSAP=nuevaDescripcionSAP + arraysTextoBuscado[i] + sTextoReemplazado;	    		
+	    	}else{
+	    		nuevaDescripcionSAP=nuevaDescripcionSAP + arraysTextoBuscado[i];
+	    	}
+
+	    }
+	    
+		return nuevaDescripcionSAP;
 	}
 	
 }

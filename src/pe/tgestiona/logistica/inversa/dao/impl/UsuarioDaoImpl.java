@@ -53,7 +53,7 @@ public class UsuarioDaoImpl implements UsuarioDao{
 			try{
 				cn.close();
 			}catch(Exception e){
-				
+				System.out.println("Se suscito la siguiente excepcion " + e.getMessage());
 			}
 		}
 		
@@ -120,7 +120,7 @@ public class UsuarioDaoImpl implements UsuarioDao{
 			try{
 				cn.close();
 			}catch(Exception e){
-				
+				System.out.println("Se suscito la siguiente excepcion " + e.getMessage());
 			}
 		}
 

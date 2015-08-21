@@ -477,37 +477,55 @@ public class FichaDevolucionDaoImpl implements FichaDevolucionDao {
 		return outArray;
 	}
 
-
-
+	
 	@Override
-	public FichaDevolucionBean obtenerFichaDevolucionAnular(String nroTicket) {
-		FichaDevolucionBean fichaDevolucionBean = null;
-		String sql="SELECT FICHADEVOL.NROTICKET,TO_CHAR(FICHADEVOL.FECHACARGA,'DD/MM/YYYY HH24:MI:SS'),TO_CHAR(FICHADEVOL.FECHASOLICITUD,'DD/MM/YYYY HH24:MI:SS'),CAN.NOMCANAL,ENT.NOMENTIDAD, " + 
-				   "TPFORM.NOMFORM,TPDEVOL.NOMTIPODEVOL,FICHADEVOL.CANTITEM,FICHADEVOL.ESTADO,FICHADEVOL.ENVIADO,FICHADEVOL.DESTINO " + 
-				   "FROM FICHADEVOLUCION FICHADEVOL,ENTIDAD ENT,TIPODEVOLUCION TPDEVOL, CANAL CAN, TIPO_FORMATO TPFORM " + 
-				   "WHERE FICHADEVOL.CODENTIDAD=ENT.CODENTIDAD AND FICHADEVOL.CODTIPODEVOL=TPDEVOL.CODTIPODEVOL AND " + 
-				   "ENT.CODCANAL=CAN.CODCANAL AND TPFORM.CODFORM=TPDEVOL.CODFORM AND FICHADEVOL.NROTICKET='" + nroTicket + "'";
+	public byte[] descargarMaterial(String ticket) {
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		HSSFSheet sheet = workbook.createSheet();
+
+		int i=0;
+		
+		HSSFRow row = sheet.createRow((short)0);
+	    
+		HSSFCell celda1=row.createCell(0);
+		HSSFCell celda2=row.createCell(1);
+		
+		celda1.setCellValue(new HSSFRichTextString("N° Ticket"));
+		celda2.setCellValue(new HSSFRichTextString("CodMaterial"));
+		
+        HSSFCellStyle cellStyle = workbook.createCellStyle();
+        cellStyle = workbook.createCellStyle();
+        cellStyle.setFillForegroundColor(HSSFColor.DARK_BLUE.index);
+        cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        HSSFFont hSSFFont = workbook.createFont();
+        hSSFFont.setFontName(HSSFFont.FONT_ARIAL);
+        hSSFFont.setFontHeightInPoints((short) 10);
+        hSSFFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        hSSFFont.setColor(HSSFColor.WHITE.index);
+        
+        cellStyle.setFont(hSSFFont);
+        
+        celda1.setCellStyle(cellStyle);
+        celda2.setCellStyle(cellStyle);
+        
+		String sql="SELECT DFD.NROTICKET,DFD.CODSAP FROM DETALLEFICHADEVOLUCION DFD WHERE DFD.NROTICKET IN (" + ticket + ") ORDER BY DFD.NROTICKET DESC";
+		
 		Connection cn = null;
 		try {
 			cn = dataSource.getConnection();
 			Statement st = cn.createStatement();
 			ResultSet rs = st.executeQuery(sql);
-			fichaDevolucionBean = new FichaDevolucionBean();
-			if (rs.next()) {
-				fichaDevolucionBean.setNroTicket(rs.getString(1));
-				fichaDevolucionBean.setFechaCarga(rs.getString(2));
-				fichaDevolucionBean.setFechaSolicitud(rs.getString(3));
-				fichaDevolucionBean.setCanal(rs.getString(4));
-				fichaDevolucionBean.setEntidad(rs.getString(5));
-				fichaDevolucionBean.setTipoFormato(rs.getString(6));
-				fichaDevolucionBean.setTipoDevolucion(rs.getString(7));
-				fichaDevolucionBean.setCantidadItem(rs.getInt(8));
-				fichaDevolucionBean.setEstado(rs.getString(9));
-				fichaDevolucionBean.setEnviado(rs.getString(10));
-				fichaDevolucionBean.setDestino(rs.getString(11));
+			while (rs.next()) {
+				i++;
+				HSSFRow row1 = sheet.createRow((short)i);				
+				row1.createCell((short)0).setCellValue(rs.getString(1));
+		        row1.createCell((short)1).setCellValue(rs.getString(2));
+			}
+			
+			for(int k=0;k<2;k++){
+				sheet.autoSizeColumn(k);
 			}
 		} catch (SQLException ex) {
-			fichaDevolucionBean = null;
 			 System.out.println("Se suscito la siguiente excepcion " + ex.getMessage());
 		} finally {
 			try {
@@ -516,7 +534,14 @@ public class FichaDevolucionDaoImpl implements FichaDevolucionDao {
 				 System.out.println("Se suscito la siguiente excepcion " + e.getMessage());
 			}
 		}
-		return fichaDevolucionBean;
+		ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
+	    try {
+	    	workbook.write(outByteStream);
+		} catch (IOException e) {
+			 System.out.println("Se suscito la siguiente excepcion " + e.getMessage());
+		}
+	    byte [] outArray = outByteStream.toByteArray();
+		return outArray;
 	}
 
 
@@ -601,56 +626,36 @@ public class FichaDevolucionDaoImpl implements FichaDevolucionDao {
 	    byte [] outArray = outByteStream.toByteArray();
 		return outArray;
 	}
-
-
+	
 	@Override
-	public byte[] descargarMaterial(String ticket) {
-		HSSFWorkbook workbook = new HSSFWorkbook();
-		HSSFSheet sheet = workbook.createSheet();
-
-		int i=0;
-		
-		HSSFRow row = sheet.createRow((short)0);
-	    
-		HSSFCell celda1=row.createCell(0);
-		HSSFCell celda2=row.createCell(1);
-		
-		celda1.setCellValue(new HSSFRichTextString("N° Ticket"));
-		celda2.setCellValue(new HSSFRichTextString("CodMaterial"));
-		
-        HSSFCellStyle cellStyle = workbook.createCellStyle();
-        cellStyle = workbook.createCellStyle();
-        cellStyle.setFillForegroundColor(HSSFColor.DARK_BLUE.index);
-        cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-        HSSFFont hSSFFont = workbook.createFont();
-        hSSFFont.setFontName(HSSFFont.FONT_ARIAL);
-        hSSFFont.setFontHeightInPoints((short) 10);
-        hSSFFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-        hSSFFont.setColor(HSSFColor.WHITE.index);
-        
-        cellStyle.setFont(hSSFFont);
-        
-        celda1.setCellStyle(cellStyle);
-        celda2.setCellStyle(cellStyle);
-        
-		String sql="SELECT DFD.NROTICKET,DFD.CODSAP FROM DETALLEFICHADEVOLUCION DFD WHERE DFD.NROTICKET IN (" + ticket + ") ORDER BY DFD.NROTICKET DESC";
-		
+	public FichaDevolucionBean obtenerFichaDevolucionAnular(String nroTicket) {
+		FichaDevolucionBean fichaDevolucionBean = null;
+		String sql="SELECT FICHADEVOL.NROTICKET,TO_CHAR(FICHADEVOL.FECHACARGA,'DD/MM/YYYY HH24:MI:SS'),TO_CHAR(FICHADEVOL.FECHASOLICITUD,'DD/MM/YYYY HH24:MI:SS'),CAN.NOMCANAL,ENT.NOMENTIDAD, " + 
+				   "TPFORM.NOMFORM,TPDEVOL.NOMTIPODEVOL,FICHADEVOL.CANTITEM,FICHADEVOL.ESTADO,FICHADEVOL.ENVIADO,FICHADEVOL.DESTINO " + 
+				   "FROM FICHADEVOLUCION FICHADEVOL,ENTIDAD ENT,TIPODEVOLUCION TPDEVOL, CANAL CAN, TIPO_FORMATO TPFORM " + 
+				   "WHERE FICHADEVOL.CODENTIDAD=ENT.CODENTIDAD AND FICHADEVOL.CODTIPODEVOL=TPDEVOL.CODTIPODEVOL AND " + 
+				   "ENT.CODCANAL=CAN.CODCANAL AND TPFORM.CODFORM=TPDEVOL.CODFORM AND FICHADEVOL.NROTICKET='" + nroTicket + "'";
 		Connection cn = null;
 		try {
 			cn = dataSource.getConnection();
 			Statement st = cn.createStatement();
 			ResultSet rs = st.executeQuery(sql);
-			while (rs.next()) {
-				i++;
-				HSSFRow row1 = sheet.createRow((short)i);				
-				row1.createCell((short)0).setCellValue(rs.getString(1));
-		        row1.createCell((short)1).setCellValue(rs.getString(2));
-			}
-			
-			for(int k=0;k<2;k++){
-				sheet.autoSizeColumn(k);
+			fichaDevolucionBean = new FichaDevolucionBean();
+			if (rs.next()) {
+				fichaDevolucionBean.setNroTicket(rs.getString(1));
+				fichaDevolucionBean.setFechaCarga(rs.getString(2));
+				fichaDevolucionBean.setFechaSolicitud(rs.getString(3));
+				fichaDevolucionBean.setCanal(rs.getString(4));
+				fichaDevolucionBean.setEntidad(rs.getString(5));
+				fichaDevolucionBean.setTipoFormato(rs.getString(6));
+				fichaDevolucionBean.setTipoDevolucion(rs.getString(7));
+				fichaDevolucionBean.setCantidadItem(rs.getInt(8));
+				fichaDevolucionBean.setEstado(rs.getString(9));
+				fichaDevolucionBean.setEnviado(rs.getString(10));
+				fichaDevolucionBean.setDestino(rs.getString(11));
 			}
 		} catch (SQLException ex) {
+			fichaDevolucionBean = null;
 			 System.out.println("Se suscito la siguiente excepcion " + ex.getMessage());
 		} finally {
 			try {
@@ -659,16 +664,7 @@ public class FichaDevolucionDaoImpl implements FichaDevolucionDao {
 				 System.out.println("Se suscito la siguiente excepcion " + e.getMessage());
 			}
 		}
-		ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
-	    try {
-	    	workbook.write(outByteStream);
-		} catch (IOException e) {
-			 System.out.println("Se suscito la siguiente excepcion " + e.getMessage());
-		}
-	    byte [] outArray = outByteStream.toByteArray();
-		return outArray;
+		return fichaDevolucionBean;
 	}
-
-
 
 }
